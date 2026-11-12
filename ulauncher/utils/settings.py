@@ -57,6 +57,8 @@ class Settings(JsonConf):
     theme_name: str = "light"
     tray_icon_name: str = "ulauncher-indicator-symbolic"
     window_shadow: int = 5
+    # Fraction of the monitor height used as the window's top margin. Higher = closer to the centre.
+    window_position_top: float = 0.25
 
     # Convert dash to underscore
     def __setitem__(self, key: str, value: Any) -> None:  # type: ignore[override]

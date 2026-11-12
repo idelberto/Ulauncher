@@ -68,7 +68,7 @@ class UlauncherWindow(Gtk.ApplicationWindow):
             skip_taskbar_hint=True,
             title="Ulauncher - Application Launcher",
             urgency_hint=True,
-            window_position=Gtk.WindowPosition.CENTER,
+            window_position=Gtk.WindowPosition.NONE,
             width_request=width_request,
             height_request=height_request,
             **kwargs,
@@ -413,16 +413,21 @@ class UlauncherWindow(Gtk.ApplicationWindow):
             return monitor.get_geometry()
         return None
 
+    def get_top_margin_ratio(self) -> float:
+        # Clamped so the window can't leave the screen or collapse the results area
+        return min(max(float(self.settings.window_position_top), 0.0), 0.45)
+
     def update_results_max_height(self) -> None:
         if layout_size := self.get_layout_size():
-            max_height = layout_size.height * 0.8 - self.prompt.get_allocated_height()
+            top_ratio = self.get_top_margin_ratio()
+            max_height = layout_size.height * (1 - 2 * top_ratio) - self.prompt.get_allocated_height()
             self.results_view.set_max_height(int(max_height))
 
     def position_window(self) -> None:
         if layout_size := self.get_layout_size():
             window_width = self.settings.base_width
             pos_x = (layout_size.width - window_width) / 2
-            pos_y = layout_size.height * 0.1
+            pos_y = layout_size.height * self.get_top_margin_ratio()
 
             self.update_results_max_height()
 
